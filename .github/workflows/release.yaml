@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@master
       - name: Put Git Tag in ENV
-        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF:10}
+        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF:10} && echo ${{ env.RELEASE_VERSION }} && exit 1;
       # Uses composer on PHP 7.3
       - name: Composer Production Install
         uses: MilesChou/composer-action/7.3/@master
