@@ -1,0 +1,9 @@
+name: mage2me
+services:
+  appserver:
+    type: 'php:7.3'
+tooling:
+  php:
+    service: appserver
+  composer:
+    service: appserver
