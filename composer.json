@@ -22,6 +22,7 @@
         }
     },
     "scripts": {
-        "phar": "phar-composer"
+        "phar": "phar-composer",
+        "build": "@phar build . build/mage2me"
     }
 }
