@@ -22,6 +22,9 @@ jobs:
       - name: Build Executable
         run: composer build
 
+      - name: Confirm version match
+        run: php ./build/mage2me --version | grep ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest
