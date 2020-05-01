@@ -24,7 +24,7 @@ jobs:
 
       # Uses composer on PHP 7.4
       - name: composer-php
-      - uses: MilesChou/composer-action/7.3/@master
+        uses: MilesChou/composer-action/7.3/@master
         with:
           args: install --dev
 
