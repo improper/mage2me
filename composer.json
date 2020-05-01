@@ -8,13 +8,20 @@
         "symfony/http-client": "^5.0",
         "symfony/process": "^5.0"
     },
+    "bin": [
+        "bin/mage2me.php"
+    ],
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
-        "larapack/dd": "^1.1"
+        "larapack/dd": "^1.1",
+        "clue/phar-composer": "^1.1"
     },
     "autoload": {
         "psr-4": {
             "App\\": "src/"
         }
+    },
+    "scripts": {
+        "phar": "phar-composer"
     }
 }

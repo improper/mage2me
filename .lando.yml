@@ -7,3 +7,6 @@ tooling:
     service: appserver
   composer:
     service: appserver
+  phar:
+    cmd: "composer phar"
+    service: appserver
