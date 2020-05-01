@@ -24,9 +24,9 @@ jobs:
 
       # Uses composer on PHP 7.4
       - name: composer-php
-        uses: nick-zh/composer@php7.3
+      - uses: MilesChou/composer-action/7.3/@master
         with:
-          action: 'install --dev'
+          args: install --dev
 
       # Runs a set of commands using the runners shell
       - name: Check PHP 5.5-7.3 Compatibility for Magento
