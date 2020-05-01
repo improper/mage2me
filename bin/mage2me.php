@@ -7,5 +7,6 @@ use Symfony\Component\Console\Application;
 
 $application = new Application('mage2me', 'v1.0.0');
 $application->add(new DownloadCommand());
+$application->setDefaultCommand('download');
 $application->run();
 

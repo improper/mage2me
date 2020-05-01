@@ -35,7 +35,7 @@ trait MagentoVersionCommandTraits
             $this->keyMageVersion(),
             null,
             InputOption::VALUE_OPTIONAL,
-            'Magento Edition',
+            'Magento Edition. [2.1, 2.2, 2.3.5, 2.4-develop, ...]',
             '2.3.5'
         );
     }
