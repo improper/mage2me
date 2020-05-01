@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Builder\MagentoBuilder;
 use App\CommandTraits\GithubAccessTraits;
 use App\CommandTraits\MagentoAccessTraits;
 use App\CommandTraits\MagentoVersionCommandTraits;
@@ -20,6 +21,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
  * @method $this addOptionMageVersion()
@@ -61,7 +63,22 @@ class DownloadCommand extends Command
         $this->validateArguments($input, $output);
         $this->validateOptions($input, $output);
 
-        return 1;
+        try {
+            $this->deployMagento($output, $input);
+        } catch (ProcessFailedException $processFailedException) {
+            $output->write('<error>' . $processFailedException->getMessage() . '</error>');
+        }
+
+        $output->writeln('<info></info>');
+        $output->writeln('<info>    Magento ' . $input->getOption($this->keyMageEdition()) . ' ' . $input->getOption($this->keyMageVersion()) . ' Downloaded.</info>');
+        $output->writeln('<info>    Access the Magento directory and run: composer install php bin/magento setup:install #Optional --use-sample-data`</info>');
+        $output->writeln('<info></info>');
+        $output->writeln('<info>    1. composer install</info>');
+        $output->writeln('<info>    2. php bin/magento setup:install #Optional --use-sample-data</info>');
+        $output->writeln('<info></info>');
+        $output->writeln('<info>      That\'s it!</info>');
+
+        return 0;
     }
 
     /**
@@ -131,7 +148,8 @@ class DownloadCommand extends Command
         return $this;
     }
 
-    private function validateMagentoVersion(InputInterface $input, OutputInterface $output){
+    private function validateMagentoVersion(InputInterface $input, OutputInterface $output)
+    {
         $versionValidation = ValidatorPreset::make(
             $input->getOptions(),
             [
@@ -146,6 +164,7 @@ class DownloadCommand extends Command
 
         $this->handleErrors($versionValidation, $output);
     }
+
     /**
      * Validate provided tokens have appropriate format and are required
      * @param InputInterface $input
@@ -288,5 +307,24 @@ class DownloadCommand extends Command
                 $fail('Magento version ' . $mageVersion . ' does not exist for ' . $userPreferredMageEdition . '(' . $mageEditionPackage . ')');
             }
         };
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param InputInterface $input
+     */
+    protected function deployMagento(OutputInterface $output, InputInterface $input)
+    {
+        MagentoBuilder::deploy(
+            function ($type, $buffer) use ($output) {
+                $output->writeln($buffer);
+            },
+            Composer::load()['magento'][$input->getOption($this->keyMageEdition())]['package'],
+            $input->getOption($this->keyMageVersion()),
+            $input->getArgument('save-to'),
+            $input->getOption($this->keyMagentoAccessPublic()),
+            $input->getOption($this->keyMagentoAccessPrivate()),
+            $input->getOption($this->keyGithubToken())
+        );
     }
 }
