@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@master
+      - name: Put Git Tag in ENV
+        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF:10}
       # Uses composer on PHP 7.3
       - name: Composer Production Install
         uses: MilesChou/composer-action/7.3/@master
@@ -23,7 +25,7 @@ jobs:
         run: composer build
 
       - name: Confirm Mage2Me version matches ${{ github.ref }}
-        run: php ./build/mage2me --version | grep ${{ github.ref }}
+        run: php ./build/mage2me --version | grep ${{ env.RELEASE_VERSION }}
 
       - name: Create Release
         id: create_release
