@@ -5,8 +5,19 @@ namespace App\Config;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 
-class Translations {
-    public static function load($locale = 'en') {
+/**
+ * Class Translations
+ *
+ * @package App\Config
+ */
+class Translations
+{
+    /**
+     * @param  string $locale
+     * @return Translator
+     */
+    public static function load($locale = 'en')
+    {
         return new Translator(new ArrayLoader(), $locale);
     }
 }

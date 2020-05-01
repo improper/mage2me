@@ -14,7 +14,10 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
         "larapack/dd": "^1.1",
-        "clue/phar-composer": "^1.1"
+        "clue/phar-composer": "^1.1",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "phpcompatibility/phpcompatibility-symfony": "*",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.6"
     },
     "autoload": {
         "psr-4": {
@@ -23,6 +26,8 @@
     },
     "scripts": {
         "phar": "phar-composer",
-        "build": "@phar build . build/mage2me"
+        "build": "@phar build . build/mage2me",
+        "php:fix-standards": "php-cs-fixer fix ./src --rules=@PSR2",
+        "php:magento-compatible": "phpcs -p ./src --standard=PHPCompatibilitySymfonyPolyfillPHP73 --extensions=php --runtime-set testVersion 5.5-"
     }
 }

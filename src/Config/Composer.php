@@ -2,8 +2,16 @@
 
 namespace App\Config;
 
+/**
+ * Class Composer
+ *
+ * @package App\Config
+ */
 class Composer
 {
+    /**
+     * @return array
+     */
     public static function load()
     {
         return [
@@ -22,4 +30,3 @@ class Composer
         ];
     }
 }
-

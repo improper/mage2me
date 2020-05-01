@@ -8,17 +8,12 @@ use App\CommandTraits\MagentoAccessTraits;
 use App\CommandTraits\MagentoVersionCommandTraits;
 use App\Config\Composer;
 use App\Config\Github;
-use App\Config\Translations;
 use App\Presets\ValidatorPreset;
-use \Exception;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Translation\ArrayLoader;
-use Illuminate\Translation\Translator;
 use Illuminate\Validation\Validator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -38,6 +33,9 @@ class DownloadCommand extends Command
 
     protected static $defaultName = "download";
 
+    /**
+     * @return void
+     */
     protected function configure()
     {
         $this
@@ -54,8 +52,8 @@ class DownloadCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param  InputInterface  $input
+     * @param  OutputInterface $output
      * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -90,7 +88,7 @@ class DownloadCommand extends Command
     }
 
     /**
-     * @param Validator $validator
+     * @param Validator       $validator
      * @param OutputInterface $output
      */
     protected function handleErrors(Validator $validator, OutputInterface $output)
@@ -107,7 +105,7 @@ class DownloadCommand extends Command
     /**
      * Validate console arguments
      *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     protected function validateArguments(InputInterface $input, OutputInterface $output)
@@ -131,8 +129,8 @@ class DownloadCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param  InputInterface  $input
+     * @param  OutputInterface $output
      * @return $this
      */
     protected function validateOptions(InputInterface $input, OutputInterface $output)
@@ -148,6 +146,10 @@ class DownloadCommand extends Command
         return $this;
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
     private function validateMagentoVersion(InputInterface $input, OutputInterface $output)
     {
         $versionValidation = ValidatorPreset::make(
@@ -167,7 +169,8 @@ class DownloadCommand extends Command
 
     /**
      * Validate provided tokens have appropriate format and are required
-     * @param InputInterface $input
+     *
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     private function validateTokenFormat(InputInterface $input, OutputInterface $output)
@@ -186,17 +189,24 @@ class DownloadCommand extends Command
             $keyMagentoPrivateToken => 'required|min:15|max:255',
         ];
 
-        $this->handleErrors(ValidatorPreset::make($tokenInput, $rules, [
-            'required' => ':attribute is required',
-            'min' => ':attribute must be at least :min characters',
-            'max' => ':attribute can not be more than :max characters'
-        ]), $output);
+        $this->handleErrors(
+            ValidatorPreset::make(
+                $tokenInput,
+                $rules,
+                [
+                'required' => ':attribute is required',
+                'min' => ':attribute must be at least :min characters',
+                'max' => ':attribute can not be more than :max characters'
+                ]
+            ),
+            $output
+        );
     }
 
     /**
      * Ensure provided credentials have authorized access
      *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     private function validateTokenAccess(InputInterface $input, OutputInterface $output)
@@ -204,13 +214,14 @@ class DownloadCommand extends Command
         $keyMagentoPublicToken = $this->keyMagentoAccessPublic();
         $keyMagentoPrivateToken = $this->keyMagentoAccessPrivate();
         $keyGithubToken = $this->keyGithubToken();
-        $validateCredentialsAuthorized = ValidatorPreset::make([
+        $validateCredentialsAuthorized = ValidatorPreset::make(
+            [
             'magento-credentials' => [
                 'public' => $input->getOption($keyMagentoPublicToken),
                 'private' => $input->getOption($keyMagentoPrivateToken)
             ],
             $keyGithubToken => $input->getOption($keyGithubToken)
-        ],
+            ],
             [
                 'magento-credentials' => $this->ruleMagentoAuthorizedAccess(),
                 $keyGithubToken => $this->ruleGithubAuthorizedAccess()
@@ -221,6 +232,7 @@ class DownloadCommand extends Command
 
     /**
      * Validator rule testing magento credentials have authorized access
+     *
      * @return \Closure
      */
     protected function ruleMagentoAuthorizedAccess()
@@ -242,11 +254,14 @@ class DownloadCommand extends Command
     {
         return function ($attributeName, $githubToken, $fail) {
             $auth_url = Github::load()['user']['auth_url'];
-            $githubUserAuth = HttpClient::createForBaseUri($auth_url, [
+            $githubUserAuth = HttpClient::createForBaseUri(
+                $auth_url,
+                [
                 'headers' => [
                     'Authorization' => 'token ' . $githubToken
                 ]
-            ]);
+                ]
+            );
 
             $response = $githubUserAuth->request('GET', '/');
             if ($response->getStatusCode() !== 200) {
@@ -256,20 +271,23 @@ class DownloadCommand extends Command
     }
 
     /**
-     * @param $username
-     * @param $password
+     * @param  $username
+     * @param  $password
      * @return \Symfony\Contracts\HttpClient\HttpClientInterface
      */
     protected function mageRepoClient($username, $password)
     {
         $repoHost = Composer::load()['magento']['repo']['host'];
-        return HttpClient::createForBaseUri('https://' . $repoHost, [
+        return HttpClient::createForBaseUri(
+            'https://' . $repoHost,
+            [
             'auth_basic' => [strval($username), strval($password)],
-        ]);
+            ]
+        );
     }
 
     /**
-     * @param InputInterface $input
+     * @param  InputInterface $input
      * @return \Closure
      */
     protected function ruleValidateMagentoVersion(InputInterface $input)
@@ -311,7 +329,7 @@ class DownloadCommand extends Command
 
     /**
      * @param OutputInterface $output
-     * @param InputInterface $input
+     * @param InputInterface  $input
      */
     protected function deployMagento(OutputInterface $output, InputInterface $input)
     {

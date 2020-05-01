@@ -5,6 +5,11 @@ namespace App\CommandTraits;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 
+/**
+ * Trait GithubAccessTraits
+ *
+ * @package App\CommandTraits
+ */
 trait GithubAccessTraits
 {
     /**

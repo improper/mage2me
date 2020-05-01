@@ -6,17 +6,30 @@ use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
+/**
+ * Class MagentoBuilder
+ *
+ * @package App\Builder
+ */
 class MagentoBuilder
 {
     /**
-     * @param \Closure $processOutput Handle client output
-     * @param string $edition
-     * @param string $version
-     * @param string $outDir
-     * @param string $magentoToken
-     * @param string $magentoPrivateToken
-     * @param string $githubToken
+     * @param  \Closure $processOutput       Handle client output
+     * @param  string   $edition
+     * @param  string   $version
+     * @param  string   $outDir
+     * @param  string   $magentoToken
+     * @param  string   $magentoPrivateToken
+     * @param  string   $githubToken
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public static function deploy(
         $processOutput,
@@ -26,11 +39,12 @@ class MagentoBuilder
         $magentoToken = "",
         $magentoPrivateToken = "",
         $githubToken = ""
-    )
-    {
+    ) {
         $composerAuth = sprintf(
             '{"http-basic": {"repo.magento.com": {"username": "%s","password": "%s"}}, "github-oauth": {"github.com": "%s"}}',
-            $magentoToken, $magentoPrivateToken, $githubToken
+            $magentoToken,
+            $magentoPrivateToken,
+            $githubToken
         );
 
         $filesystem = new Filesystem();
@@ -44,11 +58,14 @@ class MagentoBuilder
             self::temporaryPath(),
             [
                 'COMPOSER_AUTH' => $composerAuth
-            ]);
+            ]
+        );
 
-        $createProject->start(function ($type, $buffer) use ($processOutput) {
-            $processOutput($type, $buffer);
-        });
+        $createProject->start(
+            function ($type, $buffer) use ($processOutput) {
+                $processOutput($type, $buffer);
+            }
+        );
         $createProject->wait();
         if ($createProject->getExitCode() !== 0) {
             throw new ProcessFailedException($createProject);
@@ -68,13 +85,13 @@ class MagentoBuilder
     }
 
     /**
-     * @param $version
-     * @param Filesystem $filesystem
-     * @param $outDir
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @param  $version
+     * @param  Filesystem $filesystem
+     * @param  $outDir
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     protected static function putSampleNginx($version, Filesystem $filesystem, $outDir)
     {

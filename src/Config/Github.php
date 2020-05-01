@@ -2,8 +2,16 @@
 
 namespace App\Config;
 
+/**
+ * Class Github
+ *
+ * @package App\Config
+ */
 class Github
 {
+    /**
+     * @return array
+     */
     public static function load()
     {
         return [
@@ -13,4 +21,3 @@ class Github
         ];
     }
 }
-

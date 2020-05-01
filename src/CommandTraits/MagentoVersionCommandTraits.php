@@ -5,6 +5,11 @@ namespace App\CommandTraits;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 
+/**
+ * Trait MagentoVersionCommandTraits
+ *
+ * @package App\CommandTraits
+ */
 trait MagentoVersionCommandTraits
 {
     /**
