@@ -24,7 +24,7 @@ jobs:
 
       # Uses composer on PHP 7.4
       - name: composer-php
-        uses: nick-zh/composer@php7.4
+        uses: nick-zh/composer@php7.3
         with:
           action: 'install --dev'
 
