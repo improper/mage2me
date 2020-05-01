@@ -22,7 +22,7 @@ Download & Install Magento
 Some of the options shown below are indeed optional. Checkout `./mage2me --help` for more info. 
 
 ```bash
-./mage2me output-directory \
+./mage2me download output-directory \
     --mage-edition "Open Source" \
     --mage-version "2.3.5" \
     --github-token $GITHUB_TOKEN \
