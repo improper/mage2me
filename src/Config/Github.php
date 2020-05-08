@@ -17,7 +17,10 @@ class Github
         return [
             'user' => [
                 'auth_url' => 'https://api.github.com/user'
-            ]
+            ],
+            'magento'=> [
+                'Open Source' => 'https://github.com/magento/magento2/'
+            ],
         ];
     }
 }
