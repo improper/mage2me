@@ -96,7 +96,8 @@ class MagentoBuilder
     protected static function putSampleNginx($version, Filesystem $filesystem, $outDir)
     {
         $mageRepoClient = HttpClient::createForBaseUri('https://raw.githubusercontent.com/magento/magento2/');
-        $sampleNginx = $mageRepoClient->request('GET', $version . '/nginx.conf.sample')->getContent(true);
+        $repoVersion = self::getComposerData($filesystem, $outDir)['version'];
+        $sampleNginx = $mageRepoClient->request('GET', $repoVersion . '/nginx.conf.sample')->getContent(true);
         $filesystem->put($outDir . '/nginx.conf.sample', $sampleNginx, true);
     }
 }
